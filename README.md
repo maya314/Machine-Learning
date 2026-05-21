@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 🩺 BMI Categorizer & Diabetes Predictor
 
 A beginner-friendly Machine Learning web application built with Python, Flask, and Logistic Regression.
@@ -200,3 +201,6 @@ This application is for **educational purposes only**. It is not a substitute fo
 ## 📄 License
 
 MIT License — free to use, modify, and distribute.
+=======
+# Machine-Learning
+>>>>>>> 3d8b05ee5987f52b077c4866f1627751a1fdfaad
