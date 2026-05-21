@@ -1,0 +1,425 @@
+/* ============================================================
+   style.css  —  MedPredictAI
+   Font stack: Syne (headings) + DM Sans (body)
+   Theme: dark navy with teal/cyan accent — clinical-tech feel
+   ============================================================ */
+
+/* ── Reset & base ─────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:         #080e1a;
+  --surface:    #0d1826;
+  --surface2:   #111f32;
+  --border:     rgba(99, 210, 219, 0.15);
+  --accent:     #3dd6cc;
+  --accent2:    #5b8aff;
+  --accent3:    #ff6b9d;
+  --text:       #e8eef6;
+  --text-dim:   #7a93b0;
+  --success:    #4ade80;
+  --danger:     #f87171;
+  --warn:       #fbbf24;
+  --radius:     14px;
+  --radius-lg:  22px;
+  --font-head:  'Syne', sans-serif;
+  --font-body:  'DM Sans', sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── Animated background orbs ─────────────────────────────── */
+.orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.18;
+  pointer-events: none;
+  animation: drift 18s ease-in-out infinite alternate;
+}
+.orb1 { width: 500px; height: 500px; background: var(--accent2); top: -150px; left: -100px; animation-delay: 0s; }
+.orb2 { width: 400px; height: 400px; background: var(--accent);  bottom: -100px; right: -80px; animation-delay: -6s; }
+.orb3 { width: 300px; height: 300px; background: var(--accent3); top: 40%; left: 50%; animation-delay: -12s; }
+
+@keyframes drift {
+  from { transform: translateY(0) scale(1); }
+  to   { transform: translateY(40px) scale(1.08); }
+}
+
+/* ── Header ────────────────────────────────────────────────── */
+.site-header {
+  text-align: center;
+  padding: 2.2rem 1.5rem 1.2rem;
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  position: relative;
+}
+
+.logo {
+  font-family: var(--font-head);
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.logo em { color: var(--accent); font-style: normal; }
+.logo-icon { font-size: 1.6rem; }
+
+.user-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-left: auto;
+  position: absolute;
+  right: 0;
+}
+.user-greeting {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+}
+.btn-logout {
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-family: var(--font-head);
+  color: var(--accent);
+  border: 1px solid rgba(61,214,204,0.35);
+  border-radius: 50px;
+  padding: 0.28rem 0.85rem;
+  text-decoration: none;
+  transition: background 0.2s, color 0.2s;
+}
+.btn-logout:hover {
+  background: rgba(61,214,204,0.12);
+  color: var(--text);
+}
+
+.tagline {
+  color: var(--text-dim);
+  font-size: 0.95rem;
+  margin-top: 0.4rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* ── Layout container ──────────────────────────────────────── */
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 1.5rem 4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+/* ── Banner ────────────────────────────────────────────────── */
+.banner {
+  border-radius: var(--radius);
+  padding: 1rem 1.4rem;
+  font-weight: 500;
+}
+.banner--error {
+  background: rgba(248, 113, 113, 0.12);
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  color: var(--danger);
+}
+
+/* ── Results Panel ─────────────────────────────────────────── */
+.results-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+}
+
+.results-heading {
+  font-family: var(--font-head);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* ── Result Cards ──────────────────────────────────────────── */
+.result-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+  animation: slideUp 0.5s ease both;
+}
+.result-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(61,214,204,0.04) 0%, transparent 60%);
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.card-badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: rgba(61,214,204,0.15);
+  color: var(--accent);
+  border-radius: 50px;
+  padding: 0.25rem 0.75rem;
+  margin-bottom: 1rem;
+}
+
+/* BMI Card */
+.bmi-value {
+  font-family: var(--font-head);
+  font-size: 4rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--text);
+}
+
+.bmi-label {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0.5rem 0 1.5rem;
+  padding: 0.3rem 0.9rem;
+  border-radius: 50px;
+  display: inline-block;
+}
+.bmi-label.underweight   { background: rgba(251,191,36,0.15);  color: var(--warn); }
+.bmi-label.normal-weight { background: rgba(74,222,128,0.15);  color: var(--success); }
+.bmi-label.overweight    { background: rgba(251,146,60,0.15);  color: #fb923c; }
+.bmi-label.obese         { background: rgba(248,113,113,0.15); color: var(--danger); }
+
+.bmi-scale {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  text-align: center;
+  border-top: 1px solid var(--border);
+  padding-top: 1rem;
+}
+
+/* Diabetes Card */
+.diabetes-card.healthy  { border-color: rgba(74, 222, 128, 0.3); }
+.diabetes-card.diabetic { border-color: rgba(248, 113, 113, 0.3); }
+
+.diabetes-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.diabetes-result {
+  font-family: var(--font-head);
+  font-size: 2rem;
+  font-weight: 800;
+}
+.healthy  .diabetes-result { color: var(--success); }
+.diabetic .diabetes-result { color: var(--danger); }
+
+.confidence-bar-wrap { margin: 1rem 0; }
+.confidence-label { font-size: 0.85rem; color: var(--text-dim); margin-bottom: 0.4rem; }
+.confidence-label strong { color: var(--text); }
+
+.confidence-track {
+  height: 8px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 50px;
+  overflow: hidden;
+}
+.confidence-fill {
+  height: 100%;
+  border-radius: 50px;
+  background: linear-gradient(90deg, var(--accent2), var(--accent));
+  transition: width 0.8s ease;
+}
+
+.advice {
+  font-size: 0.88rem;
+  color: var(--text-dim);
+  margin-top: 0.8rem;
+  font-style: italic;
+}
+
+/* ── Form Section ──────────────────────────────────────────── */
+.form-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+}
+
+.form-heading {
+  font-family: var(--font-head);
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+}
+
+/* Fieldset */
+.fieldset {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.4rem;
+  margin-bottom: 1.2rem;
+}
+.fieldset legend {
+  font-family: var(--font-head);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  padding: 0 0.5rem;
+}
+
+/* Grids */
+.field-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+.field-grid--3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+/* Individual field */
+.field { display: flex; flex-direction: column; gap: 0.35rem; }
+
+.field label {
+  font-size: 0.83rem;
+  font-weight: 500;
+  color: var(--text-dim);
+  letter-spacing: 0.02em;
+}
+
+.field input {
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  padding: 0.65rem 0.9rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+  width: 100%;
+}
+.field input::placeholder { color: rgba(122,147,176,0.5); }
+.field input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(61,214,204,0.12);
+}
+
+.hint {
+  font-size: 0.72rem;
+  color: rgba(122,147,176,0.65);
+}
+
+/* ── Predict Button ─────────────────────────────────────────── */
+.btn-predict {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  width: 100%;
+  padding: 1rem;
+  margin-top: 1.2rem;
+  background: linear-gradient(135deg, var(--accent2) 0%, var(--accent) 100%);
+  color: #fff;
+  font-family: var(--font-head);
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+  box-shadow: 0 4px 20px rgba(91,138,255,0.3);
+}
+.btn-predict:hover {
+  opacity: 0.92;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(61,214,204,0.35);
+}
+.btn-predict:active { transform: translateY(0); }
+
+/* ── Info Cards ─────────────────────────────────────────────── */
+.info-section {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.info-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.4rem;
+  transition: transform 0.2s, border-color 0.2s;
+}
+.info-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(61,214,204,0.35);
+}
+
+.info-icon { font-size: 1.8rem; margin-bottom: 0.7rem; }
+
+.info-card h3 {
+  font-family: var(--font-head);
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.info-card p {
+  font-size: 0.83rem;
+  color: var(--text-dim);
+  line-height: 1.55;
+}
+
+/* ── Footer ─────────────────────────────────────────────────── */
+.site-footer {
+  text-align: center;
+  padding: 1.5rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+/* ── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 700px) {
+  .field-grid, .field-grid--3, .info-section {
+    grid-template-columns: 1fr;
+  }
+  .bmi-scale { grid-template-columns: repeat(2, 1fr); }
+  .bmi-value { font-size: 3rem; }
+  .diabetes-result { font-size: 1.6rem; }
+}

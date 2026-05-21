@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MedPredictAI — Login / Sign Up</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #080e1a;
+      --surface:  #0d1826;
+      --surface2: #111f32;
+      --border:   rgba(99,210,219,0.15);
+      --accent:   #3dd6cc;
+      --accent2:  #5b8aff;
+      --text:     #e8eef6;
+      --text-dim: #7a93b0;
+      --danger:   #f87171;
+      --success:  #4ade80;
+      --r:        14px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+      overflow-x: hidden;
+    }
+
+    /* Orbs */
+    .orb {
+      position: fixed; border-radius: 50%;
+      filter: blur(90px); opacity: 0.15; pointer-events: none;
+      animation: drift 20s ease-in-out infinite alternate;
+    }
+    .orb1 { width:460px;height:460px;background:var(--accent2);top:-150px;left:-120px; }
+    .orb2 { width:360px;height:360px;background:var(--accent); bottom:-80px;right:-80px;animation-delay:-8s; }
+    .orb3 { width:260px;height:260px;background:#ff6b9d;top:45%;left:55%;animation-delay:-15s; }
+    @keyframes drift {
+      from { transform: translateY(0) scale(1); }
+      to   { transform: translateY(35px) scale(1.07); }
+    }
+
+    /* Logo / brand */
+    .brand {
+      text-align: center;
+      margin-bottom: 2rem;
+      animation: fadeDown 0.5s ease both;
+    }
+    .brand-logo {
+      font-family: 'Syne', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      display: flex; align-items: center; justify-content: center; gap: 0.4rem;
+    }
+    .brand-logo em { color: var(--accent); font-style: normal; }
+    .brand-sub {
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-top: 0.3rem;
+    }
+
+    /* Card */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      width: 100%;
+      max-width: 440px;
+      padding: 2rem 2.2rem 2.4rem;
+      animation: fadeUp 0.55s ease both;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Tab switcher */
+    .tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: var(--surface2);
+      border-radius: 10px;
+      padding: 4px;
+      margin-bottom: 1.8rem;
+    }
+    .tab-btn {
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      font-family: 'Syne', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      padding: 0.55rem 0;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.25s, color 0.2s;
+    }
+    .tab-btn.active {
+      background: linear-gradient(135deg, var(--accent2), var(--accent));
+      color: #fff;
+    }
+
+    /* Forms */
+    .auth-form { display: none; flex-direction: column; gap: 1rem; }
+    .auth-form.visible { display: flex; }
+
+    .field { display: flex; flex-direction: column; gap: 0.35rem; }
+    .field label {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-dim);
+      letter-spacing: 0.03em;
+    }
+
+    .input-wrap { position: relative; }
+    .input-wrap .icon {
+      position: absolute;
+      left: 0.85rem; top: 50%; transform: translateY(-50%);
+      font-size: 1rem; pointer-events: none;
+    }
+    .field input {
+      width: 100%;
+      background: var(--surface2);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      padding: 0.65rem 0.9rem 0.65rem 2.5rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .field input::placeholder { color: rgba(122,147,176,0.45); }
+    .field input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(61,214,204,0.12);
+    }
+
+    /* Error / success messages */
+    .msg {
+      font-size: 0.82rem;
+      border-radius: 8px;
+      padding: 0.65rem 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .msg--error   { background: rgba(248,113,113,0.1); border:1px solid rgba(248,113,113,0.3); color: var(--danger); }
+    .msg--success { background: rgba(74,222,128,0.1);  border:1px solid rgba(74,222,128,0.3);  color: var(--success); }
+
+    /* Submit button */
+    .btn-auth {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      width: 100%;
+      padding: 0.85rem;
+      margin-top: 0.4rem;
+      background: linear-gradient(135deg, var(--accent2) 0%, var(--accent) 100%);
+      color: #fff;
+      font-family: 'Syne', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 11px;
+      cursor: pointer;
+      letter-spacing: 0.03em;
+      transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+      box-shadow: 0 4px 18px rgba(91,138,255,0.28);
+    }
+    .btn-auth:hover  { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 8px 28px rgba(61,214,204,0.3); }
+    .btn-auth:active { transform: translateY(0); }
+
+    /* Divider */
+    .divider {
+      display: flex; align-items: center; gap: 0.8rem;
+      color: var(--text-dim); font-size: 0.78rem; margin: 0.2rem 0;
+    }
+    .divider::before, .divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+
+    /* Switch link */
+    .switch-link {
+      text-align: center;
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      margin-top: 0.5rem;
+    }
+    .switch-link button {
+      background: none; border: none;
+      color: var(--accent);
+      font-weight: 600; font-size: 0.82rem;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    /* Password strength bar */
+    .strength-wrap { margin-top: -0.3rem; }
+    .strength-track {
+      height: 4px; background: rgba(255,255,255,0.08);
+      border-radius: 50px; overflow: hidden;
+    }
+    .strength-fill {
+      height: 100%; border-radius: 50px;
+      width: 0; transition: width 0.3s, background 0.3s;
+    }
+    .strength-label { font-size: 0.7rem; color: var(--text-dim); margin-top: 3px; }
+
+    /* Footer */
+    .auth-footer {
+      margin-top: 1.8rem;
+      font-size: 0.74rem;
+      color: var(--text-dim);
+      text-align: center;
+      animation: fadeUp 0.7s ease both;
+    }
+
+    @keyframes fadeDown { from { opacity:0;transform:translateY(-16px); } to { opacity:1;transform:translateY(0); } }
+    @keyframes fadeUp   { from { opacity:0;transform:translateY(16px);  } to { opacity:1;transform:translateY(0); } }
+
+    @media (max-width: 480px) {
+      .card { padding: 1.5rem 1.3rem 1.8rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+
+  <!-- Brand -->
+  <div class="brand">
+    <div class="brand-logo">⬡ MedPredict<em>AI</em></div>
+    <div class="brand-sub">BMI Categorizer &amp; Diabetes Predictor</div>
+  </div>
+
+  <!-- Auth Card -->
+  <div class="card">
+
+    <!-- Tab switcher -->
+    <div class="tabs">
+      <button class="tab-btn {% if active == 'signup' %}{% else %}active{% endif %}"
+              id="tab-login" onclick="switchTab('login')">Login</button>
+      <button class="tab-btn {% if active == 'signup' %}active{% endif %}"
+              id="tab-signup" onclick="switchTab('signup')">Sign Up</button>
+    </div>
+
+    <!-- ── LOGIN FORM ──────────────────────────────────────── -->
+    <form class="auth-form {% if active != 'signup' %}visible{% endif %}"
+          id="form-login" action="/login" method="POST" novalidate>
+
+      {% if login_error %}
+      <div class="msg msg--error">⚠ {{ login_error }}</div>
+      {% endif %}
+
+      <div class="field">
+        <label for="login-email">Email Address</label>
+        <div class="input-wrap">
+          <span class="icon">✉</span>
+          <input type="email" id="login-email" name="email"
+                 placeholder="you@example.com" required autocomplete="email"/>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="login-password">Password</label>
+        <div class="input-wrap">
+          <span class="icon">🔒</span>
+          <input type="password" id="login-password" name="password"
+                 placeholder="Enter your password" required autocomplete="current-password"/>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-auth">
+        Login &nbsp;→
+      </button>
+
+      <div class="switch-link">
+        New here?
+        <button type="button" onclick="switchTab('signup')">Create an account</button>
+      </div>
+    </form>
+
+    <!-- ── SIGNUP FORM ─────────────────────────────────────── -->
+    <form class="auth-form {% if active == 'signup' %}visible{% endif %}"
+          id="form-signup" action="/signup" method="POST" novalidate>
+
+      {% if signup_error %}
+      <div class="msg msg--error">⚠ {{ signup_error }}</div>
+      {% endif %}
+
+      <div class="field">
+        <label for="signup-name">Full Name</label>
+        <div class="input-wrap">
+          <span class="icon">👤</span>
+          <input type="text" id="signup-name" name="name"
+                 placeholder="Your full name" required autocomplete="name"/>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="signup-email">Email Address</label>
+        <div class="input-wrap">
+          <span class="icon">✉</span>
+          <input type="email" id="signup-email" name="email"
+                 placeholder="you@example.com" required autocomplete="email"/>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="signup-password">Password</label>
+        <div class="input-wrap">
+          <span class="icon">🔒</span>
+          <input type="password" id="signup-password" name="password"
+                 placeholder="Min. 6 characters" required
+                 oninput="checkStrength(this.value)"
+                 autocomplete="new-password"/>
+        </div>
+        <div class="strength-wrap">
+          <div class="strength-track">
+            <div class="strength-fill" id="strength-fill"></div>
+          </div>
+          <div class="strength-label" id="strength-label"></div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="signup-confirm">Confirm Password</label>
+        <div class="input-wrap">
+          <span class="icon">🔒</span>
+          <input type="password" id="signup-confirm" name="confirm"
+                 placeholder="Repeat your password" required autocomplete="new-password"/>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-auth">
+        Create Account &nbsp;→
+      </button>
+
+      <div class="switch-link">
+        Already have an account?
+        <button type="button" onclick="switchTab('login')">Log in</button>
+      </div>
+    </form>
+
+  </div><!-- /card -->
+
+  <div class="auth-footer">
+    By signing up you agree this is for educational purposes only.<br/>
+    Not a substitute for professional medical advice.
+  </div>
+
+  <script>
+    // ── Tab switching ──────────────────────────────────────────
+    function switchTab(tab) {
+      const loginForm  = document.getElementById('form-login');
+      const signupForm = document.getElementById('form-signup');
+      const tabLogin   = document.getElementById('tab-login');
+      const tabSignup  = document.getElementById('tab-signup');
+
+      if (tab === 'login') {
+        loginForm.classList.add('visible');
+        signupForm.classList.remove('visible');
+        tabLogin.classList.add('active');
+        tabSignup.classList.remove('active');
+      } else {
+        signupForm.classList.add('visible');
+        loginForm.classList.remove('visible');
+        tabSignup.classList.add('active');
+        tabLogin.classList.remove('active');
+      }
+    }
+
+    // ── Password strength indicator ────────────────────────────
+    function checkStrength(val) {
+      const fill  = document.getElementById('strength-fill');
+      const label = document.getElementById('strength-label');
+      let score = 0;
+      if (val.length >= 6)              score++;
+      if (val.length >= 10)             score++;
+      if (/[A-Z]/.test(val))            score++;
+      if (/[0-9]/.test(val))            score++;
+      if (/[^A-Za-z0-9]/.test(val))     score++;
+
+      const levels = [
+        { pct: '0%',   color: '',        text: '' },
+        { pct: '25%',  color: '#f87171', text: 'Weak' },
+        { pct: '50%',  color: '#fbbf24', text: 'Fair' },
+        { pct: '75%',  color: '#60a5fa', text: 'Good' },
+        { pct: '90%',  color: '#4ade80', text: 'Strong' },
+        { pct: '100%', color: '#3dd6cc', text: 'Very Strong' },
+      ];
+      const level = levels[Math.min(score, 5)];
+      fill.style.width      = level.pct;
+      fill.style.background = level.color;
+      label.textContent     = level.text;
+    }
+  </script>
+
+</body>
+</html>

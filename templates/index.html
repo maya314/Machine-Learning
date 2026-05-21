@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BMI &amp; Diabetes Predictor</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+  <!-- ── Animated background orbs ───────────────────────── -->
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+
+  <!-- ── Header ──────────────────────────────────────────── -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-icon">⬡</span>
+        <span>MedPredict<em>AI</em></span>
+      </div>
+      {% if username %}
+      <div class="user-bar">
+        <span class="user-greeting">👋 {{ username }}</span>
+        <a href="/logout" class="btn-logout">Logout</a>
+      </div>
+      {% endif %}
+    </div>
+    <p class="tagline">BMI Categorizer &amp; Diabetes Risk Predictor</p>
+  </header>
+
+  <main class="container">
+
+    <!-- ── Error Banner ─────────────────────────────────── -->
+    {% if error %}
+    <div class="banner banner--error">
+      ⚠ {{ error }}
+    </div>
+    {% endif %}
+
+    <!-- ── Results Panel ────────────────────────────────── -->
+    {% if show_results %}
+    <section class="results-panel">
+      <h2 class="results-heading">Your Results</h2>
+
+      <!-- BMI Card -->
+      <div class="result-card bmi-card">
+        <div class="card-badge">BMI</div>
+        <div class="bmi-value">{{ bmi }}</div>
+        <div class="bmi-label {{ bmi_category | lower | replace(' ', '-') }}">
+          {{ bmi_category }}
+        </div>
+        <div class="bmi-scale">
+          <span>Underweight<br/>&lt;18.5</span>
+          <span>Normal<br/>18.5–24.9</span>
+          <span>Overweight<br/>25–29.9</span>
+          <span>Obese<br/>&ge;30</span>
+        </div>
+      </div>
+
+      <!-- Diabetes Card -->
+      <div class="result-card diabetes-card {% if is_diabetic %}diabetic{% else %}healthy{% endif %}">
+        <div class="card-badge">Diabetes Prediction</div>
+        <div class="diabetes-icon">{% if is_diabetic %}⚠{% else %}✓{% endif %}</div>
+        <div class="diabetes-result">{{ result }}</div>
+        <div class="confidence-bar-wrap">
+          <div class="confidence-label">Model confidence: <strong>{{ confidence }}%</strong></div>
+          <div class="confidence-track">
+            <div class="confidence-fill" style="width: {{ confidence }}%"></div>
+          </div>
+        </div>
+        {% if is_diabetic %}
+        <p class="advice">Please consult a qualified healthcare professional for proper diagnosis and guidance.</p>
+        {% else %}
+        <p class="advice">Keep maintaining a healthy lifestyle — you're on the right track!</p>
+        {% endif %}
+      </div>
+    </section>
+    {% endif %}
+
+    <!-- ── Input Form ───────────────────────────────────── -->
+    <section class="form-section">
+      <h2 class="form-heading">Enter Your Details</h2>
+
+      <form action="/predict" method="POST" class="predict-form" novalidate>
+
+        <!-- Body Measurements -->
+        <fieldset class="fieldset">
+          <legend>Body Measurements</legend>
+          <div class="field-grid">
+            <div class="field">
+              <label for="weight">Weight (kg)</label>
+              <input type="number" id="weight" name="weight"
+                     placeholder="e.g. 70" min="20" max="300" step="0.1" required/>
+            </div>
+            <div class="field">
+              <label for="height">Height (cm)</label>
+              <input type="number" id="height" name="height"
+                     placeholder="e.g. 170" min="50" max="250" step="0.1" required/>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- Clinical Data -->
+        <fieldset class="fieldset">
+          <legend>Clinical Data</legend>
+          <div class="field-grid field-grid--3">
+            <div class="field">
+              <label for="pregnancies">Pregnancies</label>
+              <input type="number" id="pregnancies" name="pregnancies"
+                     placeholder="0" min="0" max="20" required/>
+              <span class="hint">Number of times pregnant</span>
+            </div>
+            <div class="field">
+              <label for="glucose">Glucose (mg/dL)</label>
+              <input type="number" id="glucose" name="glucose"
+                     placeholder="e.g. 120" min="0" max="300" required/>
+              <span class="hint">Plasma glucose (2-hr oral test)</span>
+            </div>
+            <div class="field">
+              <label for="blood_pressure">Blood Pressure (mm Hg)</label>
+              <input type="number" id="blood_pressure" name="blood_pressure"
+                     placeholder="e.g. 80" min="0" max="200" required/>
+              <span class="hint">Diastolic blood pressure</span>
+            </div>
+            <div class="field">
+              <label for="skin_thickness">Skin Thickness (mm)</label>
+              <input type="number" id="skin_thickness" name="skin_thickness"
+                     placeholder="e.g. 20" min="0" max="100" required/>
+              <span class="hint">Triceps skin fold thickness</span>
+            </div>
+            <div class="field">
+              <label for="insulin">Insulin (μU/mL)</label>
+              <input type="number" id="insulin" name="insulin"
+                     placeholder="e.g. 80" min="0" max="900" required/>
+              <span class="hint">2-Hour serum insulin</span>
+            </div>
+            <div class="field">
+              <label for="dpf">Diabetes Pedigree</label>
+              <input type="number" id="dpf" name="dpf"
+                     placeholder="e.g. 0.5" min="0.0" max="3.0" step="0.001" required/>
+              <span class="hint">Family history function (0–2.5)</span>
+            </div>
+          </div>
+          <div class="field-grid">
+            <div class="field">
+              <label for="age">Age (years)</label>
+              <input type="number" id="age" name="age"
+                     placeholder="e.g. 30" min="1" max="120" required/>
+            </div>
+          </div>
+        </fieldset>
+
+        <button type="submit" class="btn-predict">
+          <span>Predict Now</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </button>
+
+      </form>
+    </section>
+
+    <!-- ── Info Cards ────────────────────────────────────── -->
+    <section class="info-section">
+      <div class="info-card">
+        <div class="info-icon">📐</div>
+        <h3>What is BMI?</h3>
+        <p>Body Mass Index (BMI) uses your weight and height to estimate body fat. It is a quick screening tool — not a medical diagnosis.</p>
+      </div>
+      <div class="info-card">
+        <div class="info-icon">🔬</div>
+        <h3>How Prediction Works</h3>
+        <p>A Logistic Regression model trained on the Pima Indians Diabetes Dataset analyses 8 clinical features to estimate diabetes risk.</p>
+      </div>
+      <div class="info-card">
+        <div class="info-icon">⚕</div>
+        <h3>Disclaimer</h3>
+        <p>This tool is for educational purposes only. Always consult a licensed medical professional for health decisions.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <p>Built with Python · Flask · Scikit-learn · Logistic Regression</p>
+    <p>Pima Indians Diabetes Dataset — UCI Machine Learning Repository</p>
+  </footer>
+
+</body>
+</html>
